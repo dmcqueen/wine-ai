@@ -17,13 +17,13 @@ https://www.sbert.net/docs/pretrained_models.html#question-answer-retrieval-msma
 1. Deploy Vespa and Model Servers
 	- `bin/deploy_servers.sh`
 
-2. Check for 200 Return From Vespa Server
+2. Check for 200 Return from Vespa Server
 	- `watch curl -v -s --head http://localhost:19071/ApplicationStatus`
 
-3. Build and Deploy Wine AI application to Vespa
-	- `build_vespa_app.sh` 
+3. Build and Deploy Wine AI Application to Vespa
+	- `bin/build_vespa_app.sh` 
 
-4. Check for 200 Return From Deployed Application
+4. Check for 200 Return from Deployed Application
 	- `watch curl -v -s --head http://localhost:8080/ApplicationStatus`
 
 5. Transform the Data
