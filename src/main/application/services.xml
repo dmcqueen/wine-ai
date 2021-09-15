@@ -23,15 +23,6 @@
 
     <component id="com.yahoo.language.simple.SimpleLinguistics"/>
 
-    <handler id="ai.vespa.example.text_search.site.SiteHandler" bundle="wine-search">
-      <binding>http://*/site/*</binding>
-      <binding>http://*/site</binding>
-      <config name="ai.vespa.example.text_search.site.site-handler">
-        <vespaHostName>localhost</vespaHostName>
-        <vespaHostPort>8080</vespaHostPort>
-      </config>
-    </handler>
-
     <nodes jvmargs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8998">
       <node hostalias="node1" />
     </nodes>
