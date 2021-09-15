@@ -59,6 +59,12 @@ schema wine {
         }
     }
 
+    rank-profile default_2 {
+        first-phase {
+            expression: nativeRank(description) 
+        }
+    }
+
     rank-profile vector {
         first-phase {
             expression: closeness(field,desc_vector) + nativeRank(description)
