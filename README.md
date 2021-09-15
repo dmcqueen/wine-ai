@@ -18,7 +18,7 @@ https://www.kaggle.com/zynicide/wine-reviews
 ### Model 
 https://www.sbert.net/docs/pretrained_models.html#question-answer-retrieval-msmarco
 
-### Steps
+## Steps
 
 1. Deploy Vespa and Model Servers
 	- `bin/deploy_servers.sh`
