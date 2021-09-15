@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import csv
 import json
 import sys
@@ -31,6 +33,6 @@ def make_json():
 	with open(output_file, 'w') as jsonf:
 		jsonf.write(json.dumps(data, indent=4))
 
-
-make_json()
+if __name__ == '__main__':
+	make_json()
 

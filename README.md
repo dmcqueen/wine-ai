@@ -1,10 +1,15 @@
 <!-- Copyright McQueen Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-# Searching for Wine with Appoximate Nearest Neighbor and Vector Embedding  
+# Searching for Wine with Appoximate Nearest Neighbor and Paragraph Vector Embeddings 
 
-blah blah blah
+Sementic search over 150,000+ wine reviews.  Using the Vespa implementation of Approximate Nearest Neighbor (ANN) and
+the Paraphrase pretrained model (paraphrase-MiniLM-L6-v2).  Using the csv data from Wine Enthusiast a paragraph embedding
+is produced and stored in the database.  Queries are also embedded and used to produce close match results on meaning.
 
 ## Prerequisites
+
+### Shell Tools
+docker, jq, curl, xargs
 
 ### Dataset
 https://www.kaggle.com/zynicide/wine-reviews
