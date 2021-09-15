@@ -10,7 +10,7 @@ match results on their meaning.
 ## Prerequisites
 
 ### Shell Tools
-docker, jq, curl, xargs
+docker, jq, curl, watch, xargs
 
 ### Dataset
 https://www.kaggle.com/zynicide/wine-reviews
