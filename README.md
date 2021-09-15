@@ -3,8 +3,9 @@
 # Searching for Wine with Appoximate Nearest Neighbor and Paragraph Vector Embeddings 
 
 Sementic search over 150,000+ wine reviews.  Using the Vespa implementation of Approximate Nearest Neighbor (ANN) and
-the Paraphrase pretrained model (paraphrase-MiniLM-L6-v2).  Using the csv data from Wine Enthusiast a paragraph embedding
-is produced and stored in the database.  Queries are also embedded and used to produce close match results on meaning.
+the Paraphrase pretrained model (paraphrase-MiniLM-L6-v2).  The csv data from Wine Enthusiast is run through the paragraph 
+embedding model to get a tensor that's stored in the database.  Queries are then turned into tensors and used to produce close 
+match results on their meaning.
 
 ## Prerequisites
 
