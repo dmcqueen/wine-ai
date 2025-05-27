@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install prerequisites to run the example application.
-# Tools: docker, jq, curl, watch, xargs, and Java runtime.
+################################################################################
+# This script expects that you run the container with the host's Docker
+# socket bind-mounted, e.g.:
+#
+#   docker run --rm -it \
+#     -v /var/run/docker.sock:/var/run/docker.sock \
+#     your-image:latest
+#
+# That way, Docker commands inside the container will talk to the host daemon.
+################################################################################
 
 export DEBIAN_FRONTEND=noninteractive
 
+# Install prerequisites: Docker CLI, jq, curl, procps, findutils, Java runtime.
+# Note: This installs 'docker.io' which provides the docker CLI on Ubuntu.
 apt-get update
 apt-get install -y --no-install-recommends \
     docker.io \
@@ -15,16 +25,13 @@ apt-get install -y --no-install-recommends \
     findutils \
     openjdk-11-jre-headless
 
-# Start the Docker daemon if it is not already running
-if ! pgrep dockerd > /dev/null 2>&1; then
-    echo "Starting Docker daemon..."
-    nohup dockerd > /tmp/dockerd.log 2>&1 & disown
-
-    # Wait up to 30 seconds for Docker to become ready
-    if ! timeout 30 bash -c 'until docker info >/dev/null 2>&1; do sleep 1; done'; then
-        echo "ERROR: Docker did not become ready within 30 seconds."
-        exit 1
-    fi
+# Verify that Docker is accessible through the bind-mounted socket.
+echo "Checking if Docker is accessible..."
+if ! docker info >/dev/null 2>&1; then
+    echo "ERROR: Cannot communicate with Docker daemon."
+    echo "Make sure you run this container with the Docker socket bind-mounted:"
+    echo "  docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock your-image"
+    exit 1
 fi
 
 # Pre-pull container images used by the project
