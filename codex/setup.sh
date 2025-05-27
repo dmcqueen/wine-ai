@@ -15,13 +15,11 @@ apt-get install -y --no-install-recommends \
     findutils \
     openjdk-11-jre-headless
 
-# Pre-pull container images used in the README steps
 
-#docker pull python:3.6
-
-#docker pull python:3.7
-
-#docker pull maven:3.8-openjdk-11
-
-#docker pull vespaengine/vespa
+# Start the Docker daemon and pre-pull container images so that tests
+# depending on Docker can run without requiring network access.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -x "$SCRIPT_DIR/init.sh" ]; then
+    bash "$SCRIPT_DIR/init.sh"
+fi
 

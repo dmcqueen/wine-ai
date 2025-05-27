@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure Docker is available. Attempt to start it using the repo's init script
+# if `docker info` fails. Fail the test if Docker still isn't available so that
+# README steps always execute when possible.
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+if ! docker info >/dev/null 2>&1; then
+    if [ -x "$REPO_DIR/codex/init.sh" ]; then
+        bash "$REPO_DIR/codex/init.sh" || true
+    fi
+    if ! docker info >/dev/null 2>&1; then
+        echo "Docker daemon not available; failing README integration test." >&2
+        exit 1
+    fi
+fi
+
 # Integration test that follows the README instructions
 # Start Vespa and model servers using Docker
 bin/deploy_servers.sh
