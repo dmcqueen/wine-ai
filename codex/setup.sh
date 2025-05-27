@@ -17,9 +17,14 @@ apt-get install -y --no-install-recommends \
 
 # Start the Docker daemon if it is not already running
 if ! pgrep dockerd > /dev/null 2>&1; then
-    nohup dockerd > /tmp/dockerd.log 2>&1 &
-    # Wait until Docker is ready
-    timeout 30 bash -c 'until docker info >/dev/null 2>&1; do sleep 1; done'
+    echo "Starting Docker daemon..."
+    nohup dockerd > /tmp/dockerd.log 2>&1 & disown
+
+    # Wait up to 30 seconds for Docker to become ready
+    if ! timeout 30 bash -c 'until docker info >/dev/null 2>&1; do sleep 1; done'; then
+        echo "ERROR: Docker did not become ready within 30 seconds."
+        exit 1
+    fi
 fi
 
 # Pre-pull container images used by the project
@@ -31,6 +36,9 @@ images=(
 )
 
 for img in "${images[@]}"; do
+    echo "Pulling image: $img"
     docker pull "$img"
 done
 
+echo "All done!"
+exit 0
