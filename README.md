@@ -47,7 +47,7 @@ rank-profile vector_2 {
         expression: closeness(field,desc_vector) + nativeRank(description)
     }
     second-phase {
-        expression: sum(query(description_vector) * attribute(desc_vector))
+        expression: sum(query(query_vector) * attribute(desc_vector))
     }
 }
 ```
@@ -62,8 +62,8 @@ embeddings.
 In the `bin/get_wines.sh` script
 
 ```
-"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, description_vector)) limit 10 offset 0;", 
-"ranking.features.query(description_vector)" : "$TENSOR", 
+"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, query_vector)) limit 10 offset 0;", 
+"ranking.features.query(query_vector)" : "$TENSOR", 
 "ranking": "vector" 
 ```
 
@@ -117,7 +117,9 @@ The workflow below assumes Docker is installed and accessible by the current use
    ```bash
    bin/get_wines.sh "goes with asian food"
    ```
-   The script sends the query text to the model server to obtain a vector and then performs an ANN search against the Vespa index.
+   The script sends the query text to the model server to obtain a `query_vector` and then performs an ANN search against the Vespa index.  By default the "vector" search rank profile is used. 
+   
+   Expected results of above query.
 
    ```
    [

@@ -76,7 +76,7 @@ schema wine {
             expression: closeness(field,desc_vector) + nativeRank(description)
         }
         second-phase {
-            expression: sum(query(description_vector) * attribute(desc_vector))
+            expression: sum(query(query_vector) * attribute(desc_vector))
         }
     }
 

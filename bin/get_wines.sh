@@ -22,8 +22,8 @@ else
 
 	DATA=$(cat <<-_QY
 	{
-		"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, description_vector)) limit 10 offset 0;", 
-		"ranking.features.query(description_vector)" : "$TENSOR", 
+		"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, query_vector)) limit 10 offset 0;", 
+		"ranking.features.query(query_vector)" : "$TENSOR", 
 		"ranking": "vector" 
 	}
 	_QY)
