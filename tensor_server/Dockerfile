@@ -1,5 +1,9 @@
-FROM python:3.12
+FROM python:3.12.4-slim-bookworm
 
+RUN apt-get update \
+ && apt-get -y --no-install-recommends upgrade \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+ 
 RUN apt-get install bash ca-certificates curl watch
 RUN python -m pip install --upgrade pip
 RUN mkdir -p /usr/apps/server
