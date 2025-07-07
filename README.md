@@ -58,6 +58,15 @@ similarity on `desc_vector` with the text score, while `vector_2` adds a
 second‑phase rerank that computes the dot product between the query and document
 embeddings.
 
+# Selecting a rank profile 
+In the get_wines.sh
+
+```
+		"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, description_vector)) limit 10 offset 0;", 
+		"ranking.features.query(description_vector)" : "$TENSOR", 
+		"ranking": "vector" 
+```
+
 ### Model server
 `tensor_server/server.py` starts a small Flask app which loads the pretrained `paraphrase-MiniLM-L6-v2` model from SentenceTransformers. It accepts JSON payloads of the form `{ "text": "..." }` and returns the embedding as a list of floats. The Dockerfile in the same directory installs the necessary dependencies so the service can be run as a container.
 
