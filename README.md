@@ -21,7 +21,7 @@ The Vespa schema (`src/main/application/schemas/wine.sd`) defines the fields sto
 ### Wine schema and ranking
 The schema lists textual fields like `province`, `variety` and `description` together with numeric attributes such as `points` and `price`. Each document also contains a 384‑dimensional `description_vector` tensor used for semantic search.
 
-Ranking of results is controlled by four rank profiles in `wine.sd`:
+Ranking of results is controlled by three rank profiles in `wine.sd`:
 
 ```text
 rank-profile default {
