@@ -51,7 +51,7 @@ Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neigh
 similarity on `description_vector` with the nativeRank text score.
 
 ### Default rank profile 
-In the `bin/get_wines.sh` script is the http POST to Vespa.  The default query is.
+In the `bin/search_wines.sh` script is the http POST to Vespa.  The default query is.
 
 ```
 "yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(description_vector, query_vector)) limit 10 offset 0;", 
@@ -107,12 +107,12 @@ The workflow below assumes Docker is installed and accessible by the current use
 
 8. **Query**
    ```bash
-   bin/get_wines.sh "goes with asian food" vector
+   bin/search_wines.sh "goes with asian food" vector
    ```
    The script sends the query text to the model server to obtain a `query_vector` and then performs an ANN search against the Vespa index.  The `vector` parameter indicates which search rank profile is used.
    
    ```bash
-   bin/get_wines.sh "goes with asian food" default
+   bin/search_wines.sh "goes with asian food" default
    ```
 
    Would choose the bm25 profile.

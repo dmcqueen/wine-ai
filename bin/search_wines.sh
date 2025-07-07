@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# search-wine.sh
-# Usage: ./search-wine.sh "pinot noir red" default|default_2|vector
+# search_wine.sh
+# Usage: bin/search_wine.sh "pinot noir red" default|default_2|vector
 
 set -euo pipefail  # fail fast on any error, unset var, or pipe failure
 
