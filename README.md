@@ -59,7 +59,7 @@ second‑phase rerank that computes the dot product between the query and docume
 embeddings.
 
 ### Selecting a rank profile 
-In the bin/get_wines.sh script
+In the `bin/get_wines.sh` script
 
 ```
 "yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, description_vector)) limit 10 offset 0;", 
