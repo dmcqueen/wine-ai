@@ -23,7 +23,8 @@
 
     <component id="com.yahoo.language.simple.SimpleLinguistics"/>
   
-    <nodes jvm-options="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8998">
+    <nodes>
+      <jvm options="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8998"/>
       <node hostalias="node1"/>
     </nodes>
 
@@ -39,13 +40,13 @@
       <min_length>300</min_length>
     </config>
 
-    <redundancy>2</redundancy>
+    <redundancy>1</redundancy>
     <documents>
       <document type='wine' mode="index"/>
       <document-processing cluster="wine_search"/>
     </documents>
     <nodes>
-      <node distribution-key='0' hostalias='node1'/>
+      <node distribution-key="0" hostalias="node1"/>
     </nodes>
   </content>
 

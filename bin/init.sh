@@ -10,8 +10,7 @@ fi
 
 # Pre-pull container images used by the project
 images=(
-    python:3.6
-    python:3.7
+    python:3.12.4
     maven:3.8-openjdk-11
     vespaengine/vespa
 )

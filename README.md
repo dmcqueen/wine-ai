@@ -29,39 +29,44 @@ The Vespa schema (`src/main/application/schemas/wine.sd`) defines the fields sto
 ## Running the example
 The workflow below assumes Docker is installed and accessible by the current user.
 
-1. **Deploy Vespa and the model server**
+1. **Pre Download Docker Images**
+   ```bash
+   bin/init.sh
+   ```
+
+2. **Deploy Vespa and the model server**
    ```bash
    bin/deploy_servers.sh
    ```
    Two containers will be started: one running Vespa and one running the Flask embedding service.
 
-2. **Verify Vespa is up**
+3. **Verify Vespa is up**
    ```bash
    watch curl -s --head http://localhost:19071/ApplicationStatus
    ```
 
-3. **Build and deploy the Vespa application**
+4. **Build and deploy the Vespa application**
    ```bash
    bin/build_vespa_app.sh
    ```
 
-4. **Wait for the application to report ApplicationStatus**
+5. **Wait for the application to report ApplicationStatus**
    ```bash
    watch curl -s --head http://localhost:8080/ApplicationStatus
    ```
 
-5. **Transform the dataset and compute document embeddings**
+6. **Transform the dataset and compute document embeddings**
    ```bash
    bin/transform_data.sh
    ```
    Each CSV file is converted to a JSON document feed with an additional `desc_vector` tensor.
 
-6. **Load the documents into Vespa**
+7. **Load the documents into Vespa**
    ```bash
    bin/load_data.sh
    ```
 
-7. **Query**
+8. **Query**
    ```bash
    bin/get_wines.sh "goes with asian food"
    ```
