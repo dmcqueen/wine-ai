@@ -138,6 +138,19 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
     # ---- attach vectors and finish conversion ----
     for row, vec in zip(pending_rows, vectors):
         row["desc_vector"] = {"values": vec.tolist()}
+        # Parse numeric fields with fallbacks
+        for numeric_field, caster in [("price", float), ("points", int)]:
+            raw_value = row.get(numeric_field, "")
+            try:
+                row[numeric_field] = caster(raw_value) if raw_value else caster(0)
+            except ValueError:
+                logging.warning(
+                    "Invalid %s '%s' for id=%s – replacing with 0",
+                    numeric_field,
+                    raw_value,
+                    row.get("id"),
+                )
+                row[numeric_field] = caster(0)
         vespa_id = f"id:wine:wine::{row.get('id', 'MISSING')}"
         records.append({"put": vespa_id, "fields": row})
 
