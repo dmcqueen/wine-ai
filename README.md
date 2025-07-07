@@ -18,6 +18,46 @@ pom.xml           Maven configuration used to package the Vespa application
 ### Vespa application
 The Vespa schema (`src/main/application/schemas/wine.sd`) defines the fields stored for each wine review, including a `desc_vector` tensor of size 384 that stores the document embedding. Query profiles expose a query tensor feature and `services.xml` configures a single content node and search container.
 
+### Wine schema and ranking
+The schema lists textual fields like `province`, `variety` and `description` together with numeric attributes such as `points` and `price`. Each document also contains a 384‑dimensional `desc_vector` tensor used for semantic search.
+
+Ranking of results is controlled by four rank profiles in `wine.sd`:
+
+```text
+rank-profile default {
+    first-phase {
+        expression: bm25(description)
+    }
+}
+
+rank-profile default_2 {
+    first-phase {
+        expression: nativeRank(description)
+    }
+}
+
+rank-profile vector {
+    first-phase {
+        expression: closeness(field,desc_vector) + nativeRank(description)
+    }
+}
+
+rank-profile vector_2 {
+    first-phase {
+        expression: closeness(field,desc_vector) + nativeRank(description)
+    }
+    second-phase {
+        expression: sum(query(description_vector) * attribute(desc_vector))
+    }
+}
+```
+
+The `default` and `default_2` profiles rely purely on text ranking, using BM25 or
+Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neighbor
+similarity on `desc_vector` with the text score, while `vector_2` adds a
+second‑phase rerank that computes the dot product between the query and document
+embeddings.
+
 ### Model server
 `tensor_server/server.py` starts a small Flask app which loads the pretrained `paraphrase-MiniLM-L6-v2` model from SentenceTransformers. It accepts JSON payloads of the form `{ "text": "..." }` and returns the embedding as a list of floats. The Dockerfile in the same directory installs the necessary dependencies so the service can be run as a container.
 
