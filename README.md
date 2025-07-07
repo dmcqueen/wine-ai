@@ -50,7 +50,7 @@ The `default` and `default_2` profiles rely purely on text ranking, using BM25 o
 Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neighbor
 similarity on `description_vector` with the nativeRank text score.
 
-### Selecting a rank profile 
+### Default Rank Profile 
 In the `bin/get_wines.sh` script is the http POST to Vespa.  The default query is.
 
 ```
