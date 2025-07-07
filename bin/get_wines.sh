@@ -22,18 +22,19 @@ EMBED_ENDPOINT="http://localhost:8088/"
 # 2. Helper functions
 # ──────────────────────────────────
 build_default_payload() {
-  local IFS=' '                          # split on spaces only
-  local words=($QUERY)                   # → array
+  local IFS=' '                      # split on spaces only
+  local words=($QUERY)
   local cond=""
 
   for w in "${words[@]}"; do
     cond+="description contains \\\"$w\\\" or "
   done
-  cond=${cond::-4}                       # trim trailing ' or '
+  cond=${cond%" or "}                # ← portable trim
 
   cat <<JSON
 {
-  "yql": "select id,winery,variety,description from wine where $cond limit 10 offset 0;",
+  "yql": "select id,winery,variety,description \
+           from wine where $cond limit 10 offset 0;",
   "ranking": "$RANK_MODE"
 }
 JSON
