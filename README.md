@@ -1,6 +1,6 @@
 # Wine Pairings Search with Vespa
 
-This repository demonstrates how to build a small semantic search engine over the Wine Enthusiast review dataset. Documents are indexed in [Vespa](https://vespa.ai/) with dense vector representations generated from [SentenceTransformers](https://www.sbert.net/). Queries are embedded at runtime using a lightweight FastAPI service so that similar wines can be retrieved using Approximate Nearest Neighbor (ANN) search.
+This repository demonstrates how to build a small semantic search engine over the Wine Enthusiast review dataset on [Kaggle](https://www.kaggle.com/datasets/zynicide/wine-reviews). Documents are indexed in [Vespa](https://vespa.ai/) with dense vector representations generated from [SentenceTransformers](https://www.sbert.net/). Queries are embedded at runtime using a lightweight FastAPI service so that similar wines can be retrieved using Approximate Nearest Neighbor (ANN) search.
 
 The project is split into several components that can each be run in Docker containers. The provided shell scripts orchestrate the workflow of building the Vespa application, transforming the dataset and querying the service.
 
