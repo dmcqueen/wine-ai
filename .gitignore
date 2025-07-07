@@ -2,3 +2,4 @@ target
 .gitpod*
 .venv
 data/*.json
+.DS_Store

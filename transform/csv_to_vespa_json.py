@@ -5,18 +5,6 @@ csv_to_vespa_json.py
 
 Convert one or more CSV files of wine data to Vespa‑flavoured JSON.
 
-Enhancements over the minimalist original
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-* Clearer function and variable names
-* Rich doc‑strings
-* `argparse` for a friendlier CLI
-* Basic logging of progress and errors
-* Type hints for static analysis
-* Graceful handling of missing or malformed rows
-* **Duplicate‑description elimination across files and runs**  
-  ‑ A deterministic 128‑bit BLAKE2 hash of the first 128 tokens
-  ‑ The hash is *also* used as the Vespa document ID, so later feeds
-    overwrite earlier ones instead of creating duplicates
 """
 
 from __future__ import annotations
@@ -90,7 +78,7 @@ def _row_to_vespa_record(row: dict) -> dict | None:
     # Create embedding from the same truncated block used for the key
     truncated_desc = _truncate_description(row.get("description", ""))
     try:
-        row["desc_vector"] = {"values": EMBEDDING_MODEL.encode(truncated_desc).tolist()}
+        row["description_vector"] = {"values": EMBEDDING_MODEL.encode(truncated_desc).tolist()}
     except Exception as exc:
         logging.error("Failed to embed description for id=%s – %s", row.get("id"), exc)
         return None
@@ -149,7 +137,7 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
 
     # ---- attach vectors and finish conversion ----
     for (row, dup_key), vec in zip(pending_rows, vectors):
-        row["desc_vector"] = {"values": vec.tolist()}
+        row["description_vector"] = {"values": vec.tolist()}
 
         for numeric_field, caster in [("price", float), ("points", int)]:
             raw_value = row.get(numeric_field, "")

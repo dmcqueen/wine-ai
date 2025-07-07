@@ -15,5 +15,5 @@ python -m pip install --upgrade pip sentence-transformers
 # 3. Convert every CSV safely --------------------------------------------------
 shopt -s nullglob                 # empty glob ⇒ empty list, not the literal pattern
 for csv in data/*.csv; do
-  python transform/convert.py "$csv"
+  python transform/csv_to_vespa_json.py "$csv"
 done

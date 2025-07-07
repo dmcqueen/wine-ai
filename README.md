@@ -16,10 +16,10 @@ pom.xml           Maven configuration used to package the Vespa application
 ```
 
 ### Vespa application
-The Vespa schema (`src/main/application/schemas/wine.sd`) defines the fields stored for each wine review, including a `desc_vector` tensor of size 384 that stores the document embedding. Query profiles expose a query tensor feature and `services.xml` configures a single content node and search container.
+The Vespa schema (`src/main/application/schemas/wine.sd`) defines the fields stored for each wine review, including a `description_vector` tensor of size 384 that stores the document embedding. Query profiles expose a query tensor feature and `services.xml` configures a single content node and search container.
 
 ### Wine schema and ranking
-The schema lists textual fields like `province`, `variety` and `description` together with numeric attributes such as `points` and `price`. Each document also contains a 384‑dimensional `desc_vector` tensor used for semantic search.
+The schema lists textual fields like `province`, `variety` and `description` together with numeric attributes such as `points` and `price`. Each document also contains a 384‑dimensional `description_vector` tensor used for semantic search.
 
 Ranking of results is controlled by four rank profiles in `wine.sd`:
 
@@ -38,23 +38,23 @@ rank-profile default_2 {
 
 rank-profile vector {
     first-phase {
-        expression: closeness(field,desc_vector) + nativeRank(description)
+        expression: closeness(field,description_vector) + nativeRank(description)
     }
 }
 
 rank-profile vector_2 {
     first-phase {
-        expression: closeness(field,desc_vector) + nativeRank(description)
+        expression: closeness(field,description_vector) + nativeRank(description)
     }
     second-phase {
-        expression: sum(query(query_vector) * attribute(desc_vector))
+        expression: sum(query(query_vector) * attribute(description_vector))
     }
 }
 ```
 
 The `default` and `default_2` profiles rely purely on text ranking, using BM25 or
 Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neighbor
-similarity on `desc_vector` with the text score, while `vector_2` adds a
+similarity on `description_vector` with the text score, while `vector_2` adds a
 second‑phase rerank that computes the dot product between the query and document
 embeddings.
 
@@ -62,7 +62,7 @@ embeddings.
 In the `bin/get_wines.sh` script
 
 ```
-"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, query_vector)) limit 10 offset 0;", 
+"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(description_vector, query_vector)) limit 10 offset 0;", 
 "ranking.features.query(query_vector)" : "$TENSOR", 
 "ranking": "vector" 
 ```
@@ -71,7 +71,7 @@ In the `bin/get_wines.sh` script
 `tensor_server/server.py` starts a small Flask app which loads the pretrained `paraphrase-MiniLM-L6-v2` model from SentenceTransformers. It accepts JSON payloads of the form `{ "text": "..." }` and returns the embedding as a list of floats. The Dockerfile in the same directory installs the necessary dependencies so the service can be run as a container.
 
 ### Data transformation
-`transform/convert.py` reads the CSV files, removes obvious duplicates and writes Vespa feed files with the embedding precomputed for each review. `transform/transform.sh` executes this script in a Python Docker container and outputs one JSON file per input CSV.
+`transform/csv_to_vespa_json.py` reads the CSV files, removes obvious duplicates and writes Vespa feed files with the embedding precomputed for each review. `transform/transform.sh` executes this script in a Python Docker container and outputs one JSON file per input CSV.
 
 ## Running the example
 The workflow below assumes Docker is installed and accessible by the current user.
@@ -106,7 +106,7 @@ The workflow below assumes Docker is installed and accessible by the current use
    ```bash
    bin/transform_data.sh
    ```
-   Each CSV file is converted to a JSON document feed with an additional `desc_vector` tensor.
+   Each CSV file is converted to a JSON document feed with an additional `description_vector` tensor.
 
 7. **Load the documents into Vespa**
    ```bash
