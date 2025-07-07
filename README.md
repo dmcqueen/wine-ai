@@ -48,9 +48,7 @@ rank-profile vector inherits default {
 
 The `default` and `default_2` profiles rely purely on text ranking, using BM25 or
 Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neighbor
-similarity on `description_vector` with the text score, while `vector_2` adds a
-second‑phase rerank that computes the dot product between the query and document
-embeddings.
+similarity on `description_vector` with the nativeRank text score.
 
 ### Selecting a rank profile 
 In the `bin/get_wines.sh` script
