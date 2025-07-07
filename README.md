@@ -62,9 +62,9 @@ embeddings.
 In the get_wines.sh
 
 ```
-		"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, description_vector)) limit 10 offset 0;", 
-		"ranking.features.query(description_vector)" : "$TENSOR", 
-		"ranking": "vector" 
+"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(desc_vector, description_vector)) limit 10 offset 0;", 
+"ranking.features.query(description_vector)" : "$TENSOR", 
+"ranking": "vector" 
 ```
 
 ### Model server
