@@ -88,6 +88,12 @@ Switch to classic BM25 ranking:
 bin/search_wines.sh "goes with asian food" default
 ```
 
+Switch to Vespa NativeRank ranking:
+
+```bash
+bin/search_wines.sh "goes with asian food" default_2
+```
+
 ---
 
 ## Repository Layout<a id="repository-layout"></a>
