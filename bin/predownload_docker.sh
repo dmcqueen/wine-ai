@@ -22,7 +22,7 @@ set -euo pipefail
 DOCKERD_TIMEOUT="${DOCKERD_TIMEOUT:-30}"
 IMAGES=(
     python:3.12.4
-    maven:3.8-openjdk-11
+    maven:3.9.8-eclipse-temurin-17
     vespaengine/vespa
 )
 
