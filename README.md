@@ -1,6 +1,6 @@
 # Wine‑AI — Semantic Wine Recommendation & Vector Search with Vespa
 
-**Wine‑AI** is an open‑source **semantic search / recommendation engine** that lets you discover the perfect wine pairing using **vector search** powered by [Vespa.ai](https://vespa.ai/) and dense embeddings from [SentenceTransformers `paraphrase‑MiniLM‑L6‑v2`](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html).
+**Wine‑AI** is an open‑source **semantic search / recommendation engine** that lets you discover the perfect wine pairing using **vector search** powered by [Vespa.ai](https://vespa.ai/) and dense embeddings from [SentenceTransformers](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) [`paraphrase‑MiniLM‑L6‑v2`](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html).
 It indexes the 130 K‑review [Wine Enthusiast dataset](https://www.kaggle.com/datasets/zynicide/wine-reviews) and serves instant results via a lightweight [FastAPI](https://fastapi.tiangolo.com/) micro‑service.
 
 > Ask questions like **“budget‑friendly Napa Cabernet for steak”** or **“wines that go with spicy Thai food”** and get context‑aware matches ranked by both semantic similarity and BM25 relevance.
