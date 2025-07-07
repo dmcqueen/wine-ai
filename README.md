@@ -51,7 +51,7 @@ Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neigh
 similarity on `description_vector` with the nativeRank text score.
 
 ### Selecting a rank profile 
-In the `bin/get_wines.sh` script is the http POST.  The default query look like.
+In the `bin/get_wines.sh` script is the http POST to Vespa.  The default query is.
 
 ```
 "yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(description_vector, query_vector)) limit 10 offset 0;", 
