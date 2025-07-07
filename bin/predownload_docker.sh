@@ -56,6 +56,6 @@ echo "✅  Docker daemon is healthy." >&2
 echo "⬇️  Pulling container images…" >&2
 for img in "${IMAGES[@]}"; do
     echo "   • $img" >&2
-    docker pull --quiet "$img"
+    docker pull "$img"
 done
 echo "🏁  All images pulled successfully." >&2
