@@ -107,9 +107,9 @@ The workflow below assumes Docker is installed and accessible by the current use
 
 8. **Query**
    ```bash
-   bin/get_wines.sh "goes with asian food"
+   bin/get_wines.sh "goes with asian food" vector
    ```
-   The script sends the query text to the model server to obtain a `query_vector` and then performs an ANN search against the Vespa index.  By default the `vector` search rank profile is used but a parameter can be passed to choose a different ranking profile. 
+   The script sends the query text to the model server to obtain a `query_vector` and then performs an ANN search against the Vespa index.  The `vector` parameter indicates which search rank profile is used.
    
    ```bash
    bin/get_wines.sh "goes with asian food" "default"
