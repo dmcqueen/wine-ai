@@ -12,7 +12,7 @@ WORKDIR /usr/apps/server
 
 COPY . /usr/apps/server
 
-RUN pip install virtualenv Flask
+RUN pip install virtualenv fastapi uvicorn
 RUN pip install -U sentence-transformers
 
-CMD  ["/usr/local/bin/python", "/usr/apps/server/server.py"]
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8088"]

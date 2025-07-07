@@ -8,4 +8,6 @@ scipy
 nltk
 sentencepiece
 huggingface-hub
+fastapi
+uvicorn
 
