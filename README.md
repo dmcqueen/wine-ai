@@ -25,30 +25,24 @@ Ranking of results is controlled by four rank profiles in `wine.sd`:
 
 ```text
 rank-profile default {
-    first-phase {
-        expression: bm25(description)
-    }
+   first-phase {
+      expression: bm25(description) 
+   }
 }
 
 rank-profile default_2 {
-    first-phase {
-        expression: nativeRank(description)
-    }
+   first-phase {
+      expression: nativeRank(description) 
+   }
 }
 
-rank-profile vector {
-    first-phase {
-        expression: closeness(field,description_vector) + nativeRank(description)
-    }
-}
-
-rank-profile vector_2 {
-    first-phase {
-        expression: closeness(field,description_vector) + nativeRank(description)
-    }
-    second-phase {
-        expression: sum(query(query_vector) * attribute(description_vector))
-    }
+rank-profile vector inherits default {
+   inputs {
+      query(query_vector) tensor<float>(x[384])
+   }
+   first-phase {
+      expression: closeness(field, description_vector) + nativeRank(description)
+   }
 }
 ```
 
