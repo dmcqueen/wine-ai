@@ -1,0 +1,83 @@
+schema wine {
+    document wine {
+
+        field id type string {
+            indexing: index | summary | attribute
+        }
+
+        field province type string {
+            indexing: index | summary | attribute
+        }
+
+        field description type string {
+            indexing: index | summary | attribute
+            index: enable-bm25
+        }
+
+        field desc_vector type tensor<float>(x[384]) {
+            indexing: attribute
+        }
+
+        field designation type string {
+            indexing: index | summary | attribute
+        }
+
+        field variety type string {
+            indexing: index | summary | attribute
+        }
+
+        field region_1 type string {
+            indexing: index | summary | attribute
+        }
+
+        field region_2 type string {
+            indexing: index | summary | attribute
+        }
+
+        field country type string {
+            indexing: index | summary | attribute
+        }
+
+        field points type byte {
+            indexing: summary | attribute
+        }
+
+        field winery type string {
+            indexing: index | summary | attribute
+        }
+
+        field price type float {
+            indexing: summary | attribute
+        }
+
+
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: bm25(description) 
+        }
+    }
+
+    rank-profile default_2 {
+        first-phase {
+            expression: nativeRank(description) 
+        }
+    }
+
+    rank-profile vector {
+        first-phase {
+            expression: closeness(field,desc_vector) + nativeRank(description)
+        }
+    }
+
+    rank-profile vector_2 {
+        first-phase {
+            expression: closeness(field,desc_vector) + nativeRank(description)
+        }
+        second-phase {
+            expression: sum(query(description_vector) * attribute(desc_vector))
+        }
+    }
+
+}

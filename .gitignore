@@ -1,0 +1,4 @@
+target
+.gitpod*
+.venv
+data/*.json
