@@ -1,6 +1,6 @@
 # Wine Search with Vespa
 
-This repository demonstrates how to build a small semantic search engine over the Wine Enthusiast review dataset. Documents are indexed in [Vespa](https://vespa.ai/) with dense vector representations generated from [SentenceTransformers](https://www.sbert.net/). Queries are embedded at runtime using a lightweight Flask service so that similar wines can be retrieved using Approximate Nearest Neighbor (ANN) search.
+This repository demonstrates how to build a small semantic search engine over the Wine Enthusiast review dataset. Documents are indexed in [Vespa](https://vespa.ai/) with dense vector representations generated from [SentenceTransformers](https://www.sbert.net/). Queries are embedded at runtime using a lightweight FastAPI service so that similar wines can be retrieved using Approximate Nearest Neighbor (ANN) search.
 
 The project is split into several components that can each be run in Docker containers. The provided shell scripts orchestrate the workflow of building the Vespa application, transforming the dataset and querying the service.
 
@@ -10,7 +10,7 @@ The project is split into several components that can each be run in Docker cont
 bin/              Shell scripts for data processing and deployment
 data/             Wine Enthusiast CSV files
 src/main/         Vespa application package (schema, services and query profiles)
-tensor_server/    Flask server that exposes the SentenceTransformer model
+tensor_server/    FastAPI server that exposes the SentenceTransformer model
 transform/        Python utilities to convert the CSV files to Vespa JSON feed format
 pom.xml           Maven configuration used to package the Vespa application
 ```
@@ -60,7 +60,7 @@ In the `bin/get_wines.sh` script is the http POST to Vespa.  The default query i
 ```
 
 ### Model server
-`tensor_server/server.py` starts a small Flask app which loads the pretrained `paraphrase-MiniLM-L6-v2` model from SentenceTransformers. It accepts JSON payloads of the form `{ "text": "..." }` and returns the embedding as a list of floats. The Dockerfile in the same directory installs the necessary dependencies so the service can be run as a container.
+`tensor_server/server.py` starts a small FastAPI application which loads the pretrained `paraphrase-MiniLM-L6-v2` model from SentenceTransformers. It accepts JSON payloads of the form `{ "text": "..." }` and returns the embedding as a list of floats. The Dockerfile in the same directory installs the necessary dependencies so the service can be run as a container using Uvicorn.
 
 ### Data transformation
 `transform/csv_to_vespa_json.py` reads the CSV files, removes obvious duplicates and writes Vespa feed files with the embedding precomputed for each review. `transform/transform.sh` executes this script in a Python Docker container and outputs one JSON file per input CSV.
@@ -77,7 +77,7 @@ The workflow below assumes Docker is installed and accessible by the current use
    ```bash
    bin/deploy_servers.sh
    ```
-   Two containers will be started: one running Vespa and one running the Flask embedding service.
+   Two containers will be started: one running Vespa and one running the FastAPI embedding service.
 
 3. **Verify Vespa is up**
    ```bash

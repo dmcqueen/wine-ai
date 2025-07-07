@@ -3,28 +3,28 @@
 from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
-from flask import Flask
-from flask import request
-from sentence_transformers import SentenceTransformer
-import json
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import uvicorn
 
-app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def get_embedding():
-    request_data = request.get_json()
-    if request_data == None:
-        return "can't get json"
+class TextRequest(BaseModel):
+    text: str
 
-    text = request_data['text']
-    if text == None:
-        return "can't get text"
-    
-    print(text)
 
-    return json.dumps({ 
-            "paraphrase-MiniLM-L6-v2" :  model.encode(text).tolist()
-    })
+app = FastAPI()
 
-if __name__ == '__main__':
-    app.run(port=8088, host='0.0.0.0')
+
+@app.post("/")
+async def get_embedding(request_data: TextRequest):
+    text = request_data.text
+    if not text:
+        raise HTTPException(status_code=400, detail="can't get text")
+
+    embedding = model.encode(text).tolist()
+
+    return {"paraphrase-MiniLM-L6-v2": embedding}
+
+
+if __name__ == "__main__":
+    uvicorn.run("server:app", host="0.0.0.0", port=8088)
