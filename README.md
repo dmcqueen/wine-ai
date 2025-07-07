@@ -55,7 +55,7 @@ In the `bin/get_wines.sh` script
 
 ```
 "yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(description_vector, query_vector)) limit 10 offset 0;", 
-"ranking.features.query(query_vector)" : "$TENSOR", 
+"input.query(query_vector)" : "$TENSOR", 
 "ranking": "vector" 
 ```
 
