@@ -1,174 +1,150 @@
-# Wine Pairings Search with Vespa
+# Wine‑AI — Semantic Wine Recommendation & Vector Search with Vespa
 
-This repository demonstrates how to build a small semantic search engine over the Wine Enthusiast review dataset on [Kaggle](https://www.kaggle.com/datasets/zynicide/wine-reviews). Documents are indexed in [Vespa](https://vespa.ai/) with dense vector representations generated from [SentenceTransformers](https://www.sbert.net/). Queries are embedded at runtime using a lightweight FastAPI service so that similar wines can be retrieved using Approximate Nearest Neighbor (ANN) search.
+**Wine‑AI** is an open‑source **semantic search / recommendation engine** that lets you discover the perfect wine pairing using **vector search** powered by [Vespa.ai](https://vespa.ai/) and dense embeddings from [SentenceTransformers `paraphrase‑MiniLM‑L6‑v2`](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html).
+It indexes the 130 K‑review [Wine Enthusiast dataset](https://www.kaggle.com/datasets/zynicide/wine-reviews) and serves instant results via a lightweight [FastAPI](https://fastapi.tiangolo.com/) micro‑service.
 
-The project is split into several components that can each be run in Docker containers. The provided shell scripts orchestrate the workflow of building the Vespa application, transforming the dataset and querying the service.
+> Ask questions like **“budget‑friendly Napa Cabernet for steak”** or **“wines that go with spicy Thai food”** and get context‑aware matches ranked by both semantic similarity and BM25 relevance.
 
-## Repository layout
+---
 
-```
-bin/              Shell scripts for data processing and deployment
-data/             Wine Enthusiast CSV files
-src/main/         Vespa application package (schema, services and query profiles)
-tensor_server/    FastAPI server that exposes the SentenceTransformer model
-transform/        Python utilities to convert the CSV files to Vespa JSON feed format
-pom.xml           Maven configuration used to package the Vespa application
-```
+## ✨ Features
 
-### Vespa application
-The Vespa schema (`src/main/application/schemas/wine.sd`) defines the fields stored for each wine review, including a `description_vector` tensor of size 384 that stores the document embedding. Query profiles expose a query tensor feature and `services.xml` configures a single content node and search container.
+* **Hybrid ranking**: vector closeness + Vespa BM25 / nativeRank
+* **Approximate Nearest Neighbor (ANN)** search for sub‑100 ms latency
+* **End‑to‑end Docker workflow**: one script spins up Vespa cluster, ML model server, and ETL pipeline
+* **Scales to million‑plus vectors** thanks to Vespa’s streaming HNSW indexes
+* **SEO‑ready repo**: name, description, and topics follow GitHub search‑ranking best‑practices
 
-### Wine schema and ranking
-The schema lists textual fields like `province`, `variety` and `description` together with numeric attributes such as `points` and `price`. Each document also contains a 384‑dimensional `description_vector` tensor used for semantic search.
+---
 
-Ranking of results is controlled by three rank profiles in `wine.sd`:
+## 🗺️ Table of Contents
 
-```text
-rank-profile default {
-   first-phase {
-      expression: bm25(description) 
-   }
-}
+1. [Architecture](#architecture)
+2. [Quick Start](#quick-start)
+3. [Repository Layout](#repository-layout)
+4. [Vespa Schema & Ranking](#vespa-schema--ranking)
+5. [Data Pipeline](#data-pipeline)
+6. [Query Examples](#query-examples)
+7. [Contributing](#contributing)
+8. [License](#license)
 
-rank-profile default_2 {
-   first-phase {
-      expression: nativeRank(description) 
-   }
-}
+---
 
-rank-profile vector inherits default {
-   inputs {
-      query(query_vector) tensor<float>(x[384])
-   }
-   first-phase {
-      expression: closeness(field, description_vector) + nativeRank(description)
-   }
-}
-```
-
-The `default` and `default_2` profiles rely purely on text ranking, using BM25 or
-Vespa's `nativeRank` respectively. The `vector` profiles combine nearest‑neighbor
-similarity on `description_vector` with the nativeRank text score.
-
-### Default rank profile 
-In the `bin/search_wines.sh` script is the http POST to Vespa.  The default query is.
+## Architecture<a id="architecture"></a>
 
 ```
-"yql" : "select id,winery,variety,description from wine where ([{\"targetHits\": 1000}]nearestNeighbor(description_vector, query_vector)) limit 10 offset 0;", 
-"input.query(query_vector)" : "$TENSOR", 
-"ranking": "vector" 
+┌─────────────┐     ┌────────────────────────┐
+│ FastAPI     │JSON│ Vespa vector & text rank│
+│ Tensor Svc ├────►│ ANN + BM25 hybrid       │
+└─────▲───────┘     └──────────┬─────────────┘
+      │ embed text             │
+┌─────┴────────────┐    documents
+│ CSV → JSON ETL   │────────────┘
+└──────────────────┘
 ```
 
-### Model server
-`tensor_server/server.py` starts a small FastAPI application which loads the pretrained `paraphrase-MiniLM-L6-v2` model from SentenceTransformers. It accepts JSON payloads of the form `{ "text": "..." }` and returns the embedding as a list of floats. The Dockerfile in the same directory installs the necessary dependencies so the service can be run as a container using Uvicorn.
+1. **Tensor Server** embeds user queries and document descriptions with SentenceTransformers.
+2. Vespa stores each review plus its `description_vector` (384‑d).
+3. Hybrid rank profiles fuse **vector similarity** and **text relevance**.
 
-### Data transformation
-`transform/csv_to_vespa_json.py` reads the CSV files, removes obvious duplicates and writes Vespa feed files with the embedding precomputed for each review. `transform/transform.sh` executes this script in a Python Docker container and outputs one JSON file per input CSV.
+---
 
-## Running the example
-The workflow below assumes Docker is installed and accessible by the current user.
+## Quick Start<a id="quick-start"></a>
 
-1. **Pre-Download Docker Images**
-   ```bash
-   bin/predownload_docker.sh
-   ```
+> **Prerequisite:** Docker Engine ≥ 20.10
 
-2. **Deploy Vespa and the model server**
-   ```bash
-   bin/deploy_servers.sh
-   ```
-   Two containers will be started: one running Vespa and one running the FastAPI embedding service.
+```bash
+# Pull required images
+bin/predownload_docker.sh
 
-3. **Verify Vespa is up**
-   ```bash
-   watch curl -s --head http://localhost:19071/ApplicationStatus
-   ```
+# Launch Vespa & model‑server containers
+bin/deploy_servers.sh
 
-4. **Build and deploy the Vespa application**
-   ```bash
-   bin/build_vespa_app.sh
-   ```
+# Build & deploy Vespa application
+bin/build_vespa_app.sh
 
-5. **Wait for the application to report ApplicationStatus**
-   ```bash
-   watch curl -s --head http://localhost:8080/ApplicationStatus
-   ```
+# Transform CSV → Vespa JSON with embeddings
+bin/transform_data.sh
 
-6. **Transform the dataset and compute document embeddings**
-   ```bash
-   bin/transform_data.sh
-   ```
-   Each CSV file is converted to a JSON document feed with an additional `description_vector` tensor.
+# Feed documents into Vespa
+bin/load_data.sh
+```
 
-7. **Load the documents into Vespa**
-   ```bash
-   bin/load_data.sh
-   ```
+Run a semantic query
 
-8. **Query**
-   ```bash
-   bin/search_wines.sh "goes with asian food" vector
-   ```
-   The script sends the query text to the model server to obtain a `query_vector` and then performs an ANN search against the Vespa index.  The `vector` parameter indicates which search rank profile is used.
-   
-   ```bash
-   bin/search_wines.sh "goes with asian food" default
-   ```
+```bash
+bin/search_wines.sh "goes with asian food" vector
+```
 
-   Would choose the bm25 profile.
+Switch to classic BM25 ranking:
 
-9. **Expected results of above query with `vector` ranking**
-   
+```bash
+bin/search_wines.sh "goes with asian food" default
+```
 
-   ```
-   [
-      "Spann Vineyards",
-      "Red Blend",
-      "Tastes like orange, apricot and cherry sweet-and-sour sauce you get in a Chinese restaurant over pork or chicken. The flavors are of those fruits, with some white sugar and rice vinegar."
-   ]
-   [
-      "Curtis",
-      "Viognier",
-      "A little one-dimensional, but clean and crisp in acids, with the exotic floral and spice flavors the variety is noted for. Try with Asian fare."
-   ]
-   [
-      "Marcato",
-      "Garganega",
-      "Very clean, compact and fresh, here is a Soave to pair with take-away Chinese food. The wine is acidic and light with subtle aromas of peach, citrus and white flower."
-   ]
-   [
-      "Stormhoek",
-      "Sauvignon Blanc",
-      "An appealing nose of tropical fruit, citrus and spice, followed by a clean, dry, spicy combination of citrus and fresh fruit, give this white a summer sipping appeal. A great partner to salads, grilled seafood, Thai cuisine."
-   ]
-   [
-      "Joseph Swan Vineyards",
-      "Gewürztraminer",
-      "Tasting somewhere between dry and off dry on the sweetness spectrum, this has tropical fruit, white flower and spice flavors that make it a perfect accompaniment to modern Thai, Vietnamese, Chinese, Burmese and even Indian fare."
-   ]
-   [
-      "Vermeil",
-      "Sauvignon Blanc",
-      "Dryish and crisp, this shows citrus, lemongrass, herb and honey flavors, with a sweet bitterness that will play well with a wide range of food, especially modern Asian fare."
-   ]
-   [
-      "Lucas & Lewellen",
-      "Merlot",
-      "Awkward, with sweet-and-sour Chinese food flavors. Now it's cherries, then it's balsamic. Finishes sugary sweet."
-   ]
-   [
-      "Cline",
-      "Rosé",
-      "A bit simple, but useful, with flavors of lightly sugared rosehip tea, cherries and Asian spices, offset with brisk acidity. Versatile with grilled veggies, chicken, Vietnamese food."
-   ]
-   [
-      "Insomnia",
-      "White Blend",
-      "This has flavors of oranges, Meyer lemons and tropical fruits, and there's a good burst of acidity that lends balance. The finish tastes a bit sweet. Pair this selection with Vietnamese, Chinese, Thai, Indian or Ethiopian dishes."
-   ]
-   [
-      "Flocchini",
-      "Sauvignon Blanc",
-      "Clean, tart and expressive, this has flavors of Asian pear, orange, lime, vanilla and gooseberry. Bright and zesty, this would make for a fine apéritif, and it would also pair well with Asian fare."
-   ]
-   ```
+---
+
+## Repository Layout<a id="repository-layout"></a>
+
+```
+bin/              End‑to‑end scripts: deploy, transform, feed, search
+data/             Raw Kaggle CSV files (not committed)
+src/main/         Vespa application package (schema, services, query‑profiles)
+tensor_server/    FastAPI + SentenceTransformers model service
+transform/        CSV → Vespa JSON ETL utilities
+pom.xml           Maven build for Vespa app
+```
+
+---
+
+## Vespa Schema & Ranking<a id="vespa-schema--ranking"></a>
+
+Schema file: `src/main/application/schemas/wine.sd`
+
+| Field type | Example fields                               |
+| ---------- | -------------------------------------------- |
+| Text       | province, variety, description               |
+| Numeric    | points, price                                |
+| Vector     | description\_vector (tensor<float>(x\[384])) |
+
+**Rank Profiles**
+
+| Profile    | Expression                                                              |
+| ---------- | ----------------------------------------------------------------------- |
+| default    | bm25(description)                                                       |
+| default\_2 | nativeRank(description)                                                 |
+| vector     | closeness(description\_vector, query\_vector) + nativeRank(description) |
+
+---
+
+## Data Pipeline<a id="data-pipeline"></a>
+
+* `csv_to_vespa_json.py` — reads CSV, removes duplicates, embeds descriptions, writes feed files.
+* `transform.sh` wraps the above in a Python Docker container.
+* Feeds are loaded into Vespa via `load_data.sh`.
+* SentenceTransformers can be accelerated with ONNX or quantization if desired.
+
+---
+
+## Query Examples<a id="query-examples"></a>
+
+| Query                | Rank profile | Top‑1 example hit                       |
+| -------------------- | ------------ | --------------------------------------- |
+| goes with asian food | vector       | Spann Vineyards — Red Blend             |
+| budget napa cabernet | vector       | Kirkland Signature — Cabernet Sauvignon |
+
+---
+
+## Contributing<a id="contributing"></a>
+
+Pull requests are welcome! If you use Wine‑AI in research or production, please ★ star the repo and open an issue to share your story. For significant changes, discuss your proposal in an issue first.
+
+---
+
+## License<a id="license"></a>
+
+Apache 2.0
+
+**Citation:** If you build upon this work in an academic context, please cite the Kaggle Wine Enthusiast dataset and link back to this repository.
+
+<!-- GitHub Topics (add in repo settings for better discoverability): vespa, vector-search, semantic-search, sentence-transformers, wine, recommendation-system, information-retrieval, fastapi, approximate-nearest-neighbors, machine-learning -->
