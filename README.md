@@ -125,7 +125,8 @@ The workflow below assumes Docker is installed and accessible by the current use
 
    Would choose the bm25 profile.
 
-   Expected results of above query with `vector` ranking
+9. **Expected results of above query with `vector` ranking**
+   
 
    ```
    [
