@@ -58,7 +58,7 @@ similarity on `desc_vector` with the text score, while `vector_2` adds a
 second‑phase rerank that computes the dot product between the query and document
 embeddings.
 
-# Selecting a rank profile 
+### Selecting a rank profile 
 In the get_wines.sh
 
 ```
