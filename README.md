@@ -1,4 +1,4 @@
-# Wine Search with Vespa
+# Wine Pairings Search with Vespa
 
 This repository demonstrates how to build a small semantic search engine over the Wine Enthusiast review dataset. Documents are indexed in [Vespa](https://vespa.ai/) with dense vector representations generated from [SentenceTransformers](https://www.sbert.net/). Queries are embedded at runtime using a lightweight FastAPI service so that similar wines can be retrieved using Approximate Nearest Neighbor (ANN) search.
 
