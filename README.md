@@ -80,6 +80,7 @@ bin/search_wines.sh "goes with poultry" default_2
 ```
 bin/              End‑to‑end scripts: deploy, transform, feed, search
 data/             Raw Kaggle CSV files
+load/             Load transformed data into Vespa app
 tensor_server/    FastAPI + SentenceTransformers model service
 transform/        CSV → Vespa JSON ETL utilities
 vespa_app/        Vespa application package (schema, services, query‑profiles)
