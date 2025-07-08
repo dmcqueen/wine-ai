@@ -1,6 +1,3 @@
 #!/bin/bash
 
-for file in $(ls data/*.json); do  
-  java -jar bin/vespa-http-client-jar-with-dependencies.jar \
-    --verbose --file $file --endpoint http://localhost:8080; 
-done
+docker run -it --rm --network vespa-net -v "$(pwd)":/opt/java -w /opt/java openjdk:23-jdk load/load.sh
