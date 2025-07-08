@@ -26,7 +26,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 ## Quick Start<a id="quick-start"></a>
 
-> **Prerequisite:** Docker Engine ≥ 20.10
+> **Prerequisite:** Docker Engine ≥ 20.10, curl
 
 ***In a terminal from the project root run*** `./run.sh`
 
