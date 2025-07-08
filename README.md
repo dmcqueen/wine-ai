@@ -28,7 +28,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 > **Prerequisite:** Docker Engine ≥ 20.10
 
-### In a terminal execute `run.sh`
+### In a terminal run `./run.sh`
 
 What it does
 
