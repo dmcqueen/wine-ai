@@ -16,18 +16,6 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 ---
 
-## 🗺️ Table of Contents
-
-1. [Architecture](#architecture)
-2. [Quick Start](#quick-start)
-3. [Repository Layout](#repository-layout)
-4. [Vespa Schema & Ranking](#vespa-schema--ranking)
-5. [Data Pipeline](#data-pipeline)
-6. [Contributing](#contributing)
-7. [License](#license)
-
----
-
 ## Architecture<a id="architecture"></a>
 
 1. **Tensor Server** embeds user queries and document descriptions with SentenceTransformers.
