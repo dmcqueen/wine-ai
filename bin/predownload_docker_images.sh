@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# bin/predownload_docker.sh
+# bin/predownload_docker_images.sh
 #
 # Preconditions:
 #   • The Docker CLI is on PATH.

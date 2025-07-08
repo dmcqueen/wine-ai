@@ -30,7 +30,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 ```bash
 # Pull required images
-bin/predownload_docker.sh
+bin/predownload_docker_images.sh
 
 # Launch Vespa & model‑server containers
 bin/deploy_servers.sh
