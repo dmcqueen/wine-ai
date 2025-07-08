@@ -11,7 +11,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 * **Hybrid ranking**: vector closeness + Vespa BM25 / nativeRank
 * **Approximate Nearest Neighbor (ANN)** search for sub‑100 ms latency
-* **End‑to‑end Docker workflow**: one script spins up Vespa cluster, ML model server, and ETL pipeline
+* **End‑to‑end Docker workflow**: scripts to spin up Vespa cluster, ML model server, and ETL pipeline
 * **Scales to million‑plus vectors** thanks to Vespa’s streaming HNSW indexes
 
 ---
