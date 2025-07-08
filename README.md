@@ -7,7 +7,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 ---
 
-## ✨ Features
+## Features
 
 * **Hybrid ranking**: vector closeness + Vespa BM25 / nativeRank
 * **Approximate Nearest Neighbor (ANN)** search for sub‑100 ms latency
