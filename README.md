@@ -67,19 +67,19 @@ bin/load_data.sh
 Run a semantic query
 
 ```bash
-bin/search_wines.sh "goes with asian food" vector
+bin/search_wines.sh "goes with poultry" vector
 ```
 
 Switch to classic BM25 ranking:
 
 ```bash
-bin/search_wines.sh "goes with asian food" default
+bin/search_wines.sh "goes with poultry" default
 ```
 
 Switch to Vespa NativeRank ranking:
 
 ```bash
-bin/search_wines.sh "goes with asian food" default_2
+bin/search_wines.sh "goes with poultry" default_2
 ```
 
 ---
@@ -130,7 +130,7 @@ Schema file: `src/main/application/schemas/wine.sd`
 
 | Query                | Rank profile | Top‑1 example hit                       |
 | -------------------- | ------------ | --------------------------------------- |
-| goes with asian food | vector       | Spann Vineyards — Red Blend             |
+| goes with poultry    | vector       | Spann Vineyards — Red Blend             |
 | budget napa cabernet | vector       | Kirkland Signature — Cabernet Sauvignon |
 
 ---
