@@ -46,7 +46,7 @@ trap cleanup EXIT
 step "Wine‑AI data transformation starting"
 
 # ---[ 1. Activate (or create) the Python virtual environment ]---------------
-step "1/3 Preparing Python environment"
+step "Preparing Python environment"
 VENV_DIR=".venv"
 CREATED_ENV=false
 if [[ ! -d "$VENV_DIR" ]]; then
@@ -60,7 +60,7 @@ fi
 source "$VENV_DIR/bin/activate"
 
 # ---[ 2. Install dependencies (only first run) ]-----------------------------
-step "2/3 Installing Python dependencies"
+step "Installing Python dependencies"
 if [[ "$CREATED_ENV" == true ]]; then
     python -m pip install --upgrade pip
     python -m pip install sentence-transformers
@@ -69,7 +69,7 @@ else
 fi
 
 # ---[ 3. Convert every CSV in data/ ]---------------------------------------
-step "3/3 Converting CSV files"
+step "Converting CSV files"
 shopt -s nullglob
 csv_files=(data/*.csv)
 if (( ${#csv_files[@]} == 0 )); then
