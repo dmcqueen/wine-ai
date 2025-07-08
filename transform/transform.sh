@@ -43,8 +43,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-step "Wine‑AI data transformation starting"
-
 # ---[ 1. Activate (or create) the Python virtual environment ]---------------
 step "Preparing Python environment"
 VENV_DIR=".venv"
@@ -69,7 +67,6 @@ else
 fi
 
 # ---[ 3. Convert every CSV in data/ ]---------------------------------------
-step "Converting CSV files"
 shopt -s nullglob
 csv_files=(data/*.csv)
 if (( ${#csv_files[@]} == 0 )); then
