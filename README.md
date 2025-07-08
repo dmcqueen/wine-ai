@@ -11,7 +11,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 * **Hybrid ranking**: vector closeness + Vespa BM25 / nativeRank
 * **Approximate Nearest Neighbor (ANN)** search for sub‑100 ms latency
-* **End‑to‑end Docker workflow**: scripts to spin up Vespa cluster, ML model server, and ETL pipeline
+* **End‑to‑end Docker workflow**: one script to spin up the Vespa cluster, ML model server, and ETL pipeline
 * **Scales to million‑plus vectors** thanks to Vespa’s streaming HNSW indexes
 
 ---
@@ -19,7 +19,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 ## Architecture<a id="architecture"></a>
 
 1. **Tensor Server** embeds user queries and document descriptions with SentenceTransformers.
-2. Vespa stores each wine review plus its `description_vector` (384‑d).
+2. **Vespa** app stores each wine review plus its `description_vector` (384‑d).
 3. Hybrid rank profiles fuse **vector similarity** and **text relevance**.
 
 ---
@@ -27,6 +27,10 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 ## Quick Start<a id="quick-start"></a>
 
 > **Prerequisite:** Docker Engine ≥ 20.10
+
+### In a terminal execute `run.sh`
+
+What it does
 
 ```bash
 # Launch Vespa & model‑server containers
@@ -76,9 +80,10 @@ bin/search_wines.sh "goes with poultry" default_2
 ```
 bin/              End‑to‑end scripts: deploy, transform, feed, search
 data/             Raw Kaggle CSV files
-vespa_app/        Vespa application package (schema, services, query‑profiles)
 tensor_server/    FastAPI + SentenceTransformers model service
 transform/        CSV → Vespa JSON ETL utilities
+vespa_app/        Vespa application package (schema, services, query‑profiles)
+run.sh            Execute to run the demo
 ```
 
 ---
