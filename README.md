@@ -126,15 +126,6 @@ Schema file: `src/main/application/schemas/wine.sd`
 
 ---
 
-## Query Examples<a id="query-examples"></a>
-
-| Query                | Rank profile | Top‑1 example hit                       |
-| -------------------- | ------------ | --------------------------------------- |
-| goes with poultry    | vector       | Spann Vineyards — Red Blend             |
-| budget napa cabernet | vector       | Kirkland Signature — Cabernet Sauvignon |
-
----
-
 ## Contributing<a id="contributing"></a>
 
 Pull requests are welcome! If you use Wine‑AI in research or production, please ★ star the repo and open an issue to share your story. For significant changes, discuss your proposal in an issue first.
