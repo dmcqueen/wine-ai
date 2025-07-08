@@ -1,7 +1,7 @@
 # Wine‑AI — Semantic Wine Recommendation & Vector Search with Vespa
 
-**Wine‑AI** is an open‑source **semantic search / recommendation engine** that lets you discover the perfect wine pairing using **vector search** powered by [Vespa.ai](https://vespa.ai/) and dense embeddings from [SentenceTransformers](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) model [`paraphrase‑MiniLM‑L6‑v2`](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html).
-It indexes the 130 K‑review [Wine Enthusiast dataset](https://www.kaggle.com/datasets/zynicide/wine-reviews) and serves instant results via a lightweight [FastAPI](https://fastapi.tiangolo.com/) micro‑service.
+**Wine‑AI** is an open‑source **semantic search / recommendation engine** that lets you discover the perfect wine pairing using **vector search** powered by [Vespa.ai](https://vespa.ai/) and dense embeddings from [SentenceTransformers](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) model [`paraphrase-multilingual-MiniLM-L12-v2`](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html).
+It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/datasets/zynicide/wine-reviews) and serves instant results via a lightweight [FastAPI](https://fastapi.tiangolo.com/) micro‑service.
 
 > Ask questions like **“budget‑friendly Napa Cabernet for steak”** or **“wines that go with spicy Thai food”** and get context‑aware matches ranked by both semantic similarity and BM25 relevance.
 
@@ -13,7 +13,6 @@ It indexes the 130 K‑review [Wine Enthusiast dataset](https://www.kaggle.c
 * **Approximate Nearest Neighbor (ANN)** search for sub‑100 ms latency
 * **End‑to‑end Docker workflow**: one script spins up Vespa cluster, ML model server, and ETL pipeline
 * **Scales to million‑plus vectors** thanks to Vespa’s streaming HNSW indexes
-* **SEO‑ready repo**: name, description, and topics follow GitHub search‑ranking best‑practices
 
 ---
 

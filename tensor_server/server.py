@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from sentence_transformers import SentenceTransformer
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+# model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -23,7 +24,8 @@ async def get_embedding(request_data: TextRequest):
 
     embedding = model.encode(text).tolist()
 
-    return {"paraphrase-MiniLM-L6-v2": embedding}
+    # return {"paraphrase-MiniLM-L6-v2": embedding}
+    return {"paraphrase-multilingual-MiniLM-L12-v2": embedding}
 
 
 if __name__ == "__main__":

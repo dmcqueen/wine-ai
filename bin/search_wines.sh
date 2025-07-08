@@ -46,7 +46,7 @@ build_vector_payload() {
   vector=$(curl -sS \
             -H "Content-Type: application/json" \
             --data "$(jq -nc --arg t "$QUERY" '{text:$t}')" \
-            "$EMBED_ENDPOINT" | jq -r '."paraphrase-MiniLM-L6-v2"')
+            "$EMBED_ENDPOINT" | jq -r '."paraphrase-multilingual-MiniLM-L12-v2"')
 
   cat <<JSON
 {
