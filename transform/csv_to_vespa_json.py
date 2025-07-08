@@ -13,6 +13,7 @@ import argparse
 import csv
 import json
 import logging
+import math
 import pathlib
 import re
 import sys
@@ -56,6 +57,17 @@ def _dedup_key(description: str, max_tokens: int = 128) -> str:
 
     # 128‑bit BLAKE2 → extremely low collision probability
     return hashlib.blake2b(normalised.encode("utf‑8"), digest_size=16).hexdigest()
+
+
+def _progress_bar(current: int, total: int, width: int = 30) -> str:
+    """Return a textual progress bar string."""
+    if total <= 0:
+        total = 1
+    fraction = min(max(current / total, 0.0), 1.0)
+    filled = int(width * fraction)
+    bar = "█" * filled + "-" * (width - filled)
+    percent = math.floor(fraction * 100)
+    return f"[{bar}] {percent:3d}%"
 
 
 def _row_to_vespa_record(row: dict) -> dict | None:
@@ -111,7 +123,17 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
     truncated_descs: List[str] = []
     pending_rows: List[Tuple[dict, str]] = []
 
-    with csv_path.open(newline="", encoding="utf‑8") as fp:
+    with csv_path.open(newline="", encoding="utf-8") as fp:
+        total_rows = max(sum(1 for _ in fp) - 1, 0)
+
+    if total_rows == 0:
+        logging.info("→ 0 unique records in %s (no data).", csv_path.name)
+        return records
+
+    progress_interval = max(1, total_rows // 20)
+    processed = 0
+
+    with csv_path.open(newline="", encoding="utf-8") as fp:
         reader = csv.DictReader(fp)
         for row in reader:
             dup_key = _dedup_key(row.get("description", ""))
@@ -123,6 +145,10 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
             truncated_desc = _truncate_description(row.get("description", ""))
             truncated_descs.append(truncated_desc)
             pending_rows.append((row, dup_key))
+
+            processed += 1
+            if processed % progress_interval == 0 or processed == total_rows:
+                logging.info("%s %s", csv_path.name, _progress_bar(processed, total_rows))
 
     if not pending_rows:
         logging.info("→ 0 unique records in %s (all duplicates).", csv_path.name)
@@ -136,7 +162,8 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
     )
 
     # ---- attach vectors and finish conversion ----
-    for (row, dup_key), vec in zip(pending_rows, vectors):
+    progress_interval_out = max(1, len(pending_rows) // 20)
+    for idx, ((row, dup_key), vec) in enumerate(zip(pending_rows, vectors), 1):
         row["description_vector"] = {"values": vec.tolist()}
 
         for numeric_field, caster in [("price", float), ("points", int)]:
@@ -154,6 +181,9 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
 
         vespa_id = f"id:wine:wine::{dup_key}"
         records.append({"put": vespa_id, "fields": row})
+
+        if idx % progress_interval_out == 0 or idx == len(pending_rows):
+            logging.info("%s %s", csv_path.name, _progress_bar(idx, len(pending_rows)))
 
     logging.info("→ %d records written from %s", len(records), csv_path.name)
     return records
