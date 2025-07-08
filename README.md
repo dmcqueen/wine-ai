@@ -35,7 +35,7 @@ bin/deploy_servers.sh
 # Verify Vespa is live
 curl -s --head http://localhost:19071/ApplicationStatus
 
-# Build & deploy Vespa application (Optional)
+# Build Vespa application
 bin/build_vespa_app.sh
 
 # Deploy Vespa application
@@ -44,7 +44,7 @@ bin/deploy_vespa_app.sh
 # Check application is up
 curl -s --head http://localhost:8080/ApplicationStatus
 
-# Transform CSV → Vespa JSON with embeddings (Optional)
+# Transform CSV → Vespa JSON with embeddings
 bin/transform_data.sh
 
 # Feed documents into Vespa
