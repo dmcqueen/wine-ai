@@ -26,7 +26,6 @@ from sentence_transformers import SentenceTransformer
 # ──────────────────────────────────────────────────────────────────────────────
 # Globals & constants
 # ──────────────────────────────────────────────────────────────────────────────
-# EMBEDDING_MODEL = SentenceTransformer("paraphrase-MiniLM-L6-v2")
 EMBEDDING_MODEL = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 # Store de‑duplication keys (128‑bit hashes) already seen in this run
