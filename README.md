@@ -28,7 +28,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 
 > **Prerequisite:** Docker Engine ≥ 20.10
 
-### In a terminal run `./run.sh`
+***In a terminal from the project root run*** `./run.sh`
 
 What it does
 
@@ -83,7 +83,7 @@ data/             Raw Kaggle CSV files
 tensor_server/    FastAPI + SentenceTransformers model service
 transform/        CSV → Vespa JSON ETL utilities
 vespa_app/        Vespa application package (schema, services, query‑profiles)
-run.sh            Execute to run the demo
+run.sh            To run the demo
 ```
 
 ---
