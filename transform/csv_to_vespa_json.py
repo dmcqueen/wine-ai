@@ -5,11 +5,6 @@ csv_to_vespa_json.py
 
 Convert one or more CSV files of wine data to Vespa‑flavoured JSON.
 
-Changes in this version
-────────────────────────
-• Progress bar now counts *all* rows read, so it always reaches 100 %.
-• The bar is written in‑place to stderr via `_print_progress`, avoiding the
-  “ASCII pyramid” of stacked INFO lines.
 """
 
 from __future__ import annotations
@@ -18,7 +13,6 @@ import argparse
 import csv
 import json
 import logging
-import math
 import pathlib
 import re
 import sys
@@ -42,7 +36,9 @@ SEEN_DESCRIPTIONS: Dict[str, bool] = {}
 # Helper functions
 # ──────────────────────────────────────────────────────────────────────────────
 def _truncate_description(description: str, max_tokens: int = 128) -> str:
-    """Keep only the first *max_tokens* space‑separated tokens."""
+    """
+    Keep only the first *max_tokens* space‑separated tokens.
+    """
     return " ".join(description.split(" ")[:max_tokens])
 
 
@@ -51,8 +47,8 @@ def _dedup_key(description: str, max_tokens: int = 128) -> str:
     Return a **stable 32‑character hex string** that uniquely represents the
     first *max_tokens* tokens of *description*.
 
-    Normalisation makes the hash insensitive to case, accents and runs of
-    whitespace so near‑duplicates fold together.
+    Normalisation makes the hash insensitive to case, accents and
+    runs of whitespace so near‑duplicates fold together.
     """
     truncated = _truncate_description(description, max_tokens)
     normalised = unicodedata.normalize("NFKC", truncated).lower()
@@ -60,36 +56,6 @@ def _dedup_key(description: str, max_tokens: int = 128) -> str:
 
     # 128‑bit BLAKE2 → extremely low collision probability
     return hashlib.blake2b(normalised.encode("utf‑8"), digest_size=16).hexdigest()
-
-
-def _progress_bar(current: int, total: int, width: int = 30) -> str:
-    """Return a textual progress bar string such as  [█████-----] 42%."""
-    if total <= 0:
-        total = 1
-    fraction = min(max(current / total, 0.0), 1.0)
-    filled = int(width * fraction)
-    bar = "█" * filled + "-" * (width - filled)
-    percent = math.floor(fraction * 100)
-    return f"[{bar}] {percent:3d}%"
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Progress display
-# ──────────────────────────────────────────────────────────────────────────────
-def _print_progress(tag: str, current: int, total: int) -> None:
-    """
-    Write an in‑place progress bar of the form:
-
-        <tag> [██████-----] 42%
-
-    • *tag* is right‑aligned to 25 characters to keep the bar vertical.
-    • Output goes to *stderr* so it does not interfere with JSON written to
-      stdout (if someone pipes the script’s output).
-    """
-    bar = _progress_bar(current, total)
-    end_char = "\n" if current >= total else "\r"
-    sys.stderr.write(f"\r{tag:>25} {bar}{end_char}")
-    sys.stderr.flush()
 
 
 def _row_to_vespa_record(row: dict) -> dict | None:
@@ -109,11 +75,10 @@ def _row_to_vespa_record(row: dict) -> dict | None:
         return None
     SEEN_DESCRIPTIONS[dup_key] = True
 
+    # Create embedding from the same truncated block used for the key
     truncated_desc = _truncate_description(row.get("description", ""))
     try:
-        row["description_vector"] = {
-            "values": EMBEDDING_MODEL.encode(truncated_desc).tolist()
-        }
+        row["description_vector"] = {"values": EMBEDDING_MODEL.encode(truncated_desc).tolist()}
     except Exception as exc:
         logging.error("Failed to embed description for id=%s – %s", row.get("id"), exc)
         return None
@@ -146,49 +111,32 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
     truncated_descs: List[str] = []
     pending_rows: List[Tuple[dict, str]] = []
 
-    # ── first, count rows so we know the total for the progress bar ──
-    with csv_path.open(newline="", encoding="utf-8") as fp:
-        total_rows = max(sum(1 for _ in fp) - 1, 0)  # minus header
-
-    if total_rows == 0:
-        logging.info("→ 0 unique records in %s (no data).", csv_path.name)
-        return records
-
-    progress_interval = max(1, total_rows // 20)
-
-    # ── first pass: read CSV, de‑duplicate, gather descriptions ──
-    with csv_path.open(newline="", encoding="utf-8") as fp:
+    with csv_path.open(newline="", encoding="utf‑8") as fp:
         reader = csv.DictReader(fp)
-        for row_idx, row in enumerate(reader, 1):
+        for row in reader:
             dup_key = _dedup_key(row.get("description", ""))
             if dup_key in SEEN_DESCRIPTIONS:
                 logging.debug("Skipping duplicate description (row id=%s).", row.get("id"))
-                # even duplicates count towards progress
-            else:
-                SEEN_DESCRIPTIONS[dup_key] = True
-                truncated_desc = _truncate_description(row.get("description", ""))
-                truncated_descs.append(truncated_desc)
-                pending_rows.append((row, dup_key))
+                continue
+            SEEN_DESCRIPTIONS[dup_key] = True
 
-            if row_idx % progress_interval == 0 or row_idx == total_rows:
-                _print_progress(csv_path.name, row_idx, total_rows)
+            truncated_desc = _truncate_description(row.get("description", ""))
+            truncated_descs.append(truncated_desc)
+            pending_rows.append((row, dup_key))
 
     if not pending_rows:
         logging.info("→ 0 unique records in %s (all duplicates).", csv_path.name)
         return records
 
-    # ── single vectorisation call for efficiency ──
+    # ---- single vectorisation call ----
     vectors = EMBEDDING_MODEL.encode(
         truncated_descs,
         batch_size=32,              # tune to your GPU/CPU
         show_progress_bar=logging.getLogger().level <= logging.DEBUG,
     )
 
-    # ── second pass: attach vectors, fix numeric fields, build Vespa docs ──
-    total_unique = len(pending_rows)
-    progress_interval_out = max(1, total_unique // 20)
-
-    for idx, ((row, dup_key), vec) in enumerate(zip(pending_rows, vectors), 1):
+    # ---- attach vectors and finish conversion ----
+    for (row, dup_key), vec in zip(pending_rows, vectors):
         row["description_vector"] = {"values": vec.tolist()}
 
         for numeric_field, caster in [("price", float), ("points", int)]:
@@ -207,15 +155,14 @@ def csv_file_to_json_records(csv_path: pathlib.Path) -> List[dict]:
         vespa_id = f"id:wine:wine::{dup_key}"
         records.append({"put": vespa_id, "fields": row})
 
-        if idx % progress_interval_out == 0 or idx == total_unique:
-            _print_progress(csv_path.name, idx, total_unique)
-
     logging.info("→ %d records written from %s", len(records), csv_path.name)
     return records
 
 
 def write_json(records: List[dict], output_path: pathlib.Path) -> None:
-    """Dump *records* to *output_path* (pretty‑printed JSON)."""
+    """
+    Dump *records* to *output_path* (pretty‑printed JSON).
+    """
     with output_path.open("w", encoding="utf‑8") as fp:
         json.dump(records, fp, indent=4)
     logging.info("Saved %s (%d lines).", output_path.name, len(records))
@@ -225,7 +172,9 @@ def write_json(records: List[dict], output_path: pathlib.Path) -> None:
 # Main entry point
 # ──────────────────────────────────────────────────────────────────────────────
 def parse_cli_args(argv: List[str]) -> argparse.Namespace:
-    """Configure and parse command‑line arguments."""
+    """
+    Configure and parse command‑line arguments.
+    """
     parser = argparse.ArgumentParser(
         description="Convert wine CSV files to Vespa JSON format."
     )
@@ -245,7 +194,9 @@ def parse_cli_args(argv: List[str]) -> argparse.Namespace:
 
 
 def main(argv: List[str] | None = None) -> None:
-    """Orchestrate CLI parsing, file conversion, and JSON writing."""
+    """
+    Orchestrate CLI parsing, file conversion, and JSON writing.
+    """
     args = parse_cli_args(argv or sys.argv[1:])
 
     logging.basicConfig(
