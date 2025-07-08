@@ -19,7 +19,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 ## Architecture<a id="architecture"></a>
 
 1. **Tensor Server** embeds user queries and document descriptions with SentenceTransformers.
-2. Vespa stores each review plus its `description_vector` (384‑d).
+2. Vespa stores each wine review plus its `description_vector` (384‑d).
 3. Hybrid rank profiles fuse **vector similarity** and **text relevance**.
 
 ---
