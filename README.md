@@ -23,9 +23,8 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 3. [Repository Layout](#repository-layout)
 4. [Vespa Schema & Ranking](#vespa-schema--ranking)
 5. [Data Pipeline](#data-pipeline)
-6. [Query Examples](#query-examples)
-7. [Contributing](#contributing)
-8. [License](#license)
+6. [Contributing](#contributing)
+7. [License](#license)
 
 ---
 
