@@ -29,22 +29,22 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 > **Prerequisite:** Docker Engine ≥ 20.10
 
 ```bash
-# Pull required images
-bin/predownload_docker_images.sh
-
 # Launch Vespa & model‑server containers
 bin/deploy_servers.sh
 
 # Verify Vespa is live
 curl -s --head http://localhost:19071/ApplicationStatus
 
-# Build & deploy Vespa application
+# Build & deploy Vespa application (Optional)
 bin/build_vespa_app.sh
+
+# Deploy Vespa application
+bin/deploy_vespa_app.sh
 
 # Check application is up
 curl -s --head http://localhost:8080/ApplicationStatus
 
-# Transform CSV → Vespa JSON with embeddings
+# Transform CSV → Vespa JSON with embeddings (Optional)
 bin/transform_data.sh
 
 # Feed documents into Vespa
@@ -75,18 +75,17 @@ bin/search_wines.sh "goes with poultry" default_2
 
 ```
 bin/              End‑to‑end scripts: deploy, transform, feed, search
-data/             Raw Kaggle CSV files (not committed)
-src/main/         Vespa application package (schema, services, query‑profiles)
+data/             Raw Kaggle CSV files
+vespa_app/        Vespa application package (schema, services, query‑profiles)
 tensor_server/    FastAPI + SentenceTransformers model service
 transform/        CSV → Vespa JSON ETL utilities
-pom.xml           Maven build for Vespa app
 ```
 
 ---
 
 ## Vespa Schema & Ranking<a id="vespa-schema--ranking"></a>
 
-Schema file: `src/main/application/schemas/wine.sd`
+Schema file: `vespa_app/src/main/application/schemas/wine.sd`
 
 | Field type | Example fields                               |
 | ---------- | -------------------------------------------- |

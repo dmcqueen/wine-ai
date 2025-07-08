@@ -1,5 +1,4 @@
-target
-.gitpod*
-.venv
-data/*.json
 .DS_Store
+.venv
+vespa_app/target
+data/*.json
