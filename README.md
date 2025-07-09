@@ -33,7 +33,7 @@ It indexes the 150K‑review [Wine Enthusiast dataset](https://www.kaggle.com/
 What it does
 
 ```bash
-# Launch Vespa & model‑server containers
+# Launch Vespa & model‑server & streamlit containers
 bin/deploy_servers.sh
 
 # Verify Vespa is live
@@ -71,6 +71,13 @@ Switch to Vespa NativeRank ranking:
 
 ```bash
 bin/search_wines.sh "goes with poultry" default_2
+```
+
+---
+## Use the Streamlit UI
+
+```
+open http://localhost:8501/
 ```
 
 ---
