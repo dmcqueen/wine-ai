@@ -79,6 +79,9 @@ bin/search_wines.sh "goes with poultry" default_2
 ```
 open http://localhost:8501/
 ```
+<p align="center">
+    <img src="streamlit-ui.png" alt="Streamlit UI screenshot" width="600" />
+</p>
 
 ---
 
@@ -90,6 +93,7 @@ data/             Raw Kaggle CSV files
 load/             Load transformed data into Vespa app
 tensor_server/    FastAPI + SentenceTransformers model service
 transform/        CSV → Vespa JSON ETL utilities
+ui/               Streamlit ui http://localhost:8501/
 vespa_app/        Vespa application package (schema, services, query‑profiles)
 run.sh            To run the demo
 ```
