@@ -59,13 +59,13 @@ def _get_embedding(text: str) -> List[float]:
         raise ValueError("Bad vector length")
     return vec
 
-def build_vector_params(q: str, k: int) -> Dict:
+def build_vector_params(q: str, k: int, profile: str = "vector") -> Dict:
     return {
         "yql": ( "select id, winery, variety, region_1, country, price, points, "
                  "description from wine where "
                  "([{ \"targetHits\": %d }]nearestNeighbor(description_vector, query_vector)) "
                  "limit %d;" % (k, k) ),
-        "ranking": "vector",
+        "ranking": profile,
         "k": str(k),
         "input.query(query_vector)": _get_embedding(q),
     }
@@ -167,9 +167,15 @@ RANKINGS = [
     (
         "Vector",
         "closeness(description_vector, query_vector) + nativeRank(description)",
+        "vector",
     ),
-    ("Keyword (default)", "bm25(description)"),
-    ("Keyword (default_2)", "nativeRank(description)"),
+    (
+        "Vector (vector_2)",
+        "closeness(description_vector, query_vector) + nativeRank(description) + attribute(points)/100.0",
+        "vector_2",
+    ),
+    ("Keyword (default)", "bm25(description)", "default"),
+    ("Keyword (default_2)", "nativeRank(description)", "default_2"),
 ]
 
 ranking_idx = st.radio(
@@ -177,12 +183,12 @@ ranking_idx = st.radio(
     options=list(range(len(RANKINGS))),
     format_func=lambda i: RANKINGS[i][0],
 )
-ranking = RANKINGS[ranking_idx][0]
+ranking_label, _, ranking_profile = RANKINGS[ranking_idx]
 
 header = st.columns([3, 7])
 header[0].markdown("**Mode**")
 header[1].markdown("**Expression**")
-for i, (name, expr) in enumerate(RANKINGS):
+for i, (name, expr, _) in enumerate(RANKINGS):
     cols = st.columns([3, 7])
     bullet = "&#9679;" if i == ranking_idx else "&#9711;"
     cols[0].markdown(f"{bullet} {name}", unsafe_allow_html=True)
@@ -192,11 +198,11 @@ if q:
     try:
         with st.spinner("Finding the perfect glass…"):
             params = (
-                build_vector_params(q, top_k)
-                if ranking == "Vector"
+                build_vector_params(q, top_k, ranking_profile)
+                if ranking_profile.startswith("vector")
                 else build_keyword_params(
                     q,
-                    "default" if "(default)" in ranking else "default_2",
+                    ranking_profile,
                     top_k
                 )
             )
