@@ -152,7 +152,7 @@ st.title("🍇  Wine-AI — Semantic Pairings")
 
 q = st.text_input(
     "Describe your dish, mood, or wine style",
-    placeholder="goes with seafood",
+    placeholder="goes with fish",
     max_chars=MAX_TEXT_LEN
 )
 
