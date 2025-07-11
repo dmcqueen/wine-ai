@@ -4,21 +4,20 @@ from typing import List, Dict
 
 st.set_page_config(page_title="Wine-AI Pairings", page_icon="🍷")
 
-# Prefer Streamlit “secrets” (encrypted at rest for Community Cloud and not
-# exposed via `st.secrets.get_dict()`):
-VESPA_ENDPOINT = st.secrets["vespa"]["endpoint"]       # https://example.a1.vespa‑cloud.com
-# VESPA_API_KEY  = st.secrets["vespa"]["api_key"]        # optional token auth
-EMBED_ENDPOINT = st.secrets["embed"]["endpoint"]       # https://embed.company.int
-
 TIMEOUT = (3.5, 10)          # (connect, read) seconds
 MAX_TEXT_LEN = 256           # enforce small queries
 MAX_VECTOR_LEN = 384         # expected MiniLM dimensionality
 MAX_K = 20                   # upper bound from UI
 
+VESPA_ENDPOINT = st.secrets["vespa"]["endpoint"]       # https://example.a1.vespa‑cloud.com
+EMBED_ENDPOINT = st.secrets["embed"]["endpoint"]       # https://embed.company.int
+VESPA_API_KEY  = st.secrets["vespa"]["api_key"]        # optional token auth
+
 vespa_session = requests.Session()
 vespa_session.headers.update({
     "User-Agent": "Wine-AI/1.0",
 })
+
 if VESPA_API_KEY:
     vespa_session.headers["Authorization"] = f"Bearer {VESPA_API_KEY}"
 
