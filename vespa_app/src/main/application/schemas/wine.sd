@@ -74,4 +74,13 @@ schema wine {
         }
     }
 
+    rank-profile vector_2 inherits default {
+        inputs {
+            query(query_vector) tensor<float>(x[384])
+        }
+        first-phase {
+            expression: closeness(field, description_vector) + nativeRank(description) + nativeRank(points)
+        }
+    }
+
 }
