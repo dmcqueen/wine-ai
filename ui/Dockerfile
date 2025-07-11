@@ -9,7 +9,7 @@ RUN pip install streamlit requests
 # 2. Copy code *first* to leverage Docker cache
 WORKDIR /app
 
-COPY . /app
+COPY streamlit_app.py  /app/
 
 ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
 ENV STREAMLIT_SERVER_PORT=8501
