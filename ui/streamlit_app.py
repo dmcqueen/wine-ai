@@ -1,5 +1,5 @@
 """
-app.py - Streamlit UI for Wine-AI
+streamlit_app.py - Streamlit UI for Wine-AI
 ---------------------------------
 Mirrors the logic of search_wine.sh (keyword + vector modes).
 """
