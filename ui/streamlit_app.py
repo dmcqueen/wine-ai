@@ -162,11 +162,31 @@ top_k = st.slider(
     label_visibility="collapsed"         # keep label hidden if you like
 )
 
-ranking = st.radio(
+# ── Ranking mode table ──────────────────────────────────────────────────────
+RANKINGS = [
+    (
+        "Vector",
+        "closeness(description_vector, query_vector) + nativeRank(description)",
+    ),
+    ("Keyword (default)", "bm25(description)"),
+    ("Keyword (default_2)", "nativeRank(description)"),
+]
+
+ranking_idx = st.radio(
     "Ranking mode",
-    ("Vector", "Keyword (default)", "Keyword (default_2)"),
-    horizontal=True                      # keep horizontal layout of buttons
+    options=list(range(len(RANKINGS))),
+    format_func=lambda i: RANKINGS[i][0],
 )
+ranking = RANKINGS[ranking_idx][0]
+
+header = st.columns([3, 7])
+header[0].markdown("**Mode**")
+header[1].markdown("**Expression**")
+for i, (name, expr) in enumerate(RANKINGS):
+    cols = st.columns([3, 7])
+    bullet = "&#9679;" if i == ranking_idx else "&#9711;"
+    cols[0].markdown(f"{bullet} {name}", unsafe_allow_html=True)
+    cols[1].code(expr, language="")
 
 if q:
     try:
