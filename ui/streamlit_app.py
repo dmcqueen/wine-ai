@@ -148,11 +148,11 @@ def hit_card(hit):
         st.markdown("---")
 
 # ─────────── UI  ───────────
-st.title("🍇 Wine-AI — Semantic Pairings")
+st.title("🍇  Wine-AI — Semantic Pairings")
 
 q = st.text_input(
     "Describe your dish, mood, or wine style",
-    placeholder="",
+    placeholder="goes with seafood",
     max_chars=MAX_TEXT_LEN
 )
 
