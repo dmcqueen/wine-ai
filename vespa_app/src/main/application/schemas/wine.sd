@@ -79,7 +79,7 @@ schema wine {
             query(query_vector) tensor<float>(x[384])
         }
         first-phase {
-            expression: closeness(field, description_vector) + nativeRank(description) + nativeRank(points)
+            expression: closeness(field, description_vector) + nativeRank(description) + attribute(points)/100.0
         }
     }
 
