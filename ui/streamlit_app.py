@@ -59,13 +59,15 @@ def _get_embedding(text: str) -> List[float]:
         raise ValueError("Bad vector length")
     return vec
 
-def build_vector_params(q: str, k: int) -> Dict:
+def build_vector_params(q: str, ranking: str, k: int) -> Dict:
     return {
-        "yql": ( "select id, winery, variety, region_1, country, price, points, "
-                 "description from wine where "
-                 "([{ \"targetHits\": %d }]nearestNeighbor(description_vector, query_vector)) "
-                 "limit %d;" % (k, k) ),
-        "ranking": "vector",
+        "yql": (
+            "select id, winery, variety, region_1, country, price, points, "
+            "description from wine where "
+            "([{ \"targetHits\": %d }]nearestNeighbor(description_vector, query_vector)) "
+            "limit %d;" % (k, k)
+        ),
+        "ranking": ranking,
         "k": str(k),
         "input.query(query_vector)": _get_embedding(q),
     }
@@ -166,10 +168,16 @@ top_k = st.slider(
 RANKINGS = [
     (
         "Vector",
+        "vector",
         "closeness(description_vector, query_vector) + nativeRank(description)",
     ),
-    ("Keyword (default)", "bm25(description)"),
-    ("Keyword (default_2)", "nativeRank(description)"),
+    (
+        "Vector (vector_2)",
+        "vector_2",
+        "closeness(description_vector, query_vector) + nativeRank(description) + attribute(points)/100.0",
+    ),
+    ("Keyword (default)", "default", "bm25(description)"),
+    ("Keyword (default_2)", "default_2", "nativeRank(description)"),
 ]
 
 ranking_idx = st.radio(
@@ -178,20 +186,16 @@ ranking_idx = st.radio(
     format_func=lambda i: RANKINGS[i][0],
     horizontal=True,
 )
-ranking, ranking_expr = RANKINGS[ranking_idx]
+ranking_label, ranking_profile, ranking_expr = RANKINGS[ranking_idx]
 st.code(ranking_expr, language="")
 
 if q:
     try:
         with st.spinner("Finding the perfect glass…"):
             params = (
-                build_vector_params(q, top_k)
-                if ranking == "Vector"
-                else build_keyword_params(
-                    q,
-                    "default" if "(default)" in ranking else "default_2",
-                    top_k
-                )
+                build_vector_params(q, ranking_profile, top_k)
+                if ranking_label.startswith("Vector")
+                else build_keyword_params(q, ranking_profile, top_k)
             )
             r = vespa.post(f"{VESPA_ENDPOINT}/search/", json=params, timeout=TIMEOUT)
             if r.status_code != 200:
