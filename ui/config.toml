@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#9C133A"         # accent (slider, radio tick)
+backgroundColor = "#FBF9F7"      # page bg
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1E1E1E"
+font = "sans serif"
