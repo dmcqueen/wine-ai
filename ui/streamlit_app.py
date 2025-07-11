@@ -1,4 +1,3 @@
-# app_secure.py  –  hardened Streamlit UI for Wine‑AI
 import os, html, logging, requests, streamlit as st
 from typing import List, Dict
 
@@ -9,9 +8,9 @@ MAX_TEXT_LEN = 256           # enforce small queries
 MAX_VECTOR_LEN = 384         # expected MiniLM dimensionality
 MAX_K = 20                   # upper bound from UI
 
-VESPA_ENDPOINT = st.secrets["vespa"]["endpoint"]       # https://example.a1.vespa‑cloud.com
-EMBED_ENDPOINT = st.secrets["embed"]["endpoint"]       # https://embed.company.int
-VESPA_API_KEY  = st.secrets["vespa"]["api_key"]        # optional token auth
+VESPA_ENDPOINT = st.secrets["vespa"]["endpoint"]       
+EMBED_ENDPOINT = st.secrets["embed"]["endpoint"]       
+VESPA_API_KEY  = st.secrets["vespa"]["api_key"]   # optional token auth
 
 vespa_session = requests.Session()
 vespa_session.headers.update({
@@ -87,11 +86,11 @@ if query:
             res = vespa_session.post(f"{VESPA_ENDPOINT}/search/",
                                json=params, timeout=TIMEOUT, verify=True)
 
-            # res.raise_for_status()
-            if res.status_code != 200:
-                logging.error("Vespa %s: %s", res.status_code, res.text)
-                st.error(f"Vespa {res.status_code}: {res.json().get('message', res.text)}")
-                st.stop()            
+            res.raise_for_status()
+            # if res.status_code != 200:
+            #     logging.error("Vespa %s: %s", res.status_code, res.text)
+            #     st.error(f"Vespa {res.status_code}: {res.json().get('message', res.text)}")
+            #     st.stop()            
 
             hits = res.json().get("root", {}).get("children", [])[:top_k]
 
