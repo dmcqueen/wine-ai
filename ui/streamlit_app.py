@@ -49,11 +49,11 @@ embed.headers.update({"User-Agent": "Wine-AI/1.0"})
 @st.cache_data(show_spinner=False, ttl=3600)
 def _get_embedding(text: str) -> List[float]:
     res = embed.post(EMBED_ENDPOINT, json={"text": text}, timeout=TIMEOUT)
-    res.raise_for_status()
-    # if res.status_code != 200:
-    #     logging.error("Vespa %s: %s", res.status_code, res.text)
-    #     st.error(f"Vespa {res.status_code}: {res.json().get('message', res.text)}")
-    #     st.stop()         
+    # res.raise_for_status()
+    if res.status_code != 200:
+        logging.error("Vespa %s: %s", res.status_code, res.text)
+        st.error(f"Vespa {res.status_code}: {res.json().get('message', res.text)}")
+        st.stop()         
     vec = res.json()["paraphrase-multilingual-MiniLM-L12-v2"]
     if len(vec) != MAX_VECTOR_LEN:
         raise ValueError("Bad vector length")
