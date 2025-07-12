@@ -26,6 +26,12 @@ section.main > div + div .element-container:has(hr){
     border-radius:8px;padding:0.6rem 1rem;
     background:var(--secondary-background-color)
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+.stApp h1 {
+    font-family: 'Caveat', cursive !important;
+    font-size: 3rem !important;
+}        
 </style>
 """, unsafe_allow_html=True)
 
@@ -150,7 +156,7 @@ def hit_card(hit):
         st.markdown("---")
 
 # ─────────── UI  ───────────
-st.title("🍇  Wine-AI — Semantic Pairings")
+st.title("🍇  Wine-Ai — Semantic Pairings")
 
 q = st.text_input(
     "Describe your dish, mood, or wine style",
