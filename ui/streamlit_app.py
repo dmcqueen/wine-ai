@@ -30,7 +30,7 @@ section.main > div + div .element-container:has(hr){
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
 .stApp h1 {
     font-family: 'Caveat', cursive !important;
-    font-size: 3rem !important;
+    font-size: 3.09rem !important;
 }        
 </style>
 """, unsafe_allow_html=True)
