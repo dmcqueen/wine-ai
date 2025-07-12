@@ -15,7 +15,10 @@ schema wine {
         }
 
         field description_vector type tensor<float>(x[384]) {
-            indexing: attribute
+            indexing: index | attribute
+            attribute {
+                distance-metric: angular
+            }
         }
 
         field designation type string {
@@ -55,7 +58,7 @@ schema wine {
 
     rank-profile default {
         first-phase {
-            expression: bm25(description) 
+            expression: bm25(description)
         }
     }
 
@@ -70,7 +73,7 @@ schema wine {
             query(query_vector) tensor<float>(x[384])
         }
         first-phase {
-            expression: closeness(field, description_vector) + nativeRank(description)
+            expression: closeness(field, description_vector)
         }
     }
 
@@ -79,7 +82,10 @@ schema wine {
             query(query_vector) tensor<float>(x[384])
         }
         first-phase {
-            expression: closeness(field, description_vector) + nativeRank(description) + attribute(points)/100.0
+            expression: closeness(field, description_vector)
+        }
+        second-phase {
+            expression: attribute(points)
         }
     }
 

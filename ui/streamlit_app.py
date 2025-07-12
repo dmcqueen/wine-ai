@@ -169,12 +169,12 @@ RANKINGS = [
     (
         "Vector",
         "vector",
-        "closeness(description_vector, query_vector) + nativeRank(description)",
+        "closeness(description_vector, query_vector)",
     ),
     (
         "Vector (vector_2)",
         "vector_2",
-        "closeness(description_vector, query_vector) + nativeRank(description) + attribute(points)/100.0",
+        "first-phase: closeness(description_vector, query_vector), second-phase: attribute(points)",
     ),
     ("Keyword (default)", "default", "bm25(description)"),
     ("Keyword (default_2)", "default_2", "nativeRank(description)"),

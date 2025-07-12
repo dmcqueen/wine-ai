@@ -8,12 +8,12 @@ set -euo pipefail  # fail fast on any error, unset var, or pipe failure
 # 1. Argument parsing & sanity check
 # ──────────────────────────────────
 if (( $# != 2 )); then
-  echo "Usage: $0 \"SEARCH TERMS\" RANKING_MODE (default|default_2|vector)" >&2
+  echo "Usage: $0 \"SEARCH TERMS\" RANKING_MODE (default|default_2|vector|vector_2)" >&2
   exit 1
 fi
 
 QUERY=$1          # free‑text search phrase
-RANK_MODE=$2      # default | default_2 | vector
+RANK_MODE=$2      # default | default_2 | vector | vector_2
 
 SEARCH_ENDPOINT="http://localhost:8080/search/"
 EMBED_ENDPOINT="http://localhost:8088/"
@@ -52,7 +52,7 @@ build_vector_payload() {
 {
   "yql": "select id,winery,variety,description from wine where ([{\\"targetHits\\":1000}]nearestNeighbor(description_vector, query_vector)) limit 10 offset 0;",
   "input.query(query_vector)": "$vector",
-  "ranking": "vector"
+  "ranking": "vector_2"
 }
 JSON
 }
@@ -62,7 +62,7 @@ JSON
 # ──────────────────────────────────
 case "$RANK_MODE" in
   default|default_2)  PAYLOAD=$(build_default_payload) ;;
-  vector)             PAYLOAD=$(build_vector_payload)  ;;
+  vector|vector_2)             PAYLOAD=$(build_vector_payload)  ;;
   *)
     echo "Invalid ranking mode: $RANK_MODE" >&2
     exit 2

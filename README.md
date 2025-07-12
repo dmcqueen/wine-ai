@@ -116,8 +116,8 @@ Schema file: `vespa_app/src/main/application/schemas/wine.sd`
 | ---------- | ----------------------------------------------------------------------- |
 | default    | bm25(description)                                                       |
 | default\_2 | nativeRank(description)                                                 |
-| vector     | closeness(description\_vector, query\_vector) + nativeRank(description) |
-| vector_2   | closeness(description\_vector, query\_vector) + nativeRank(description) + attribute(points)/100.0 |
+| vector     | closeness(description\_vector, query\_vector)                           |
+| vector_2   | first-phase: closeness(description\_vector, query\_vector), second-phase: attribute(points) |
 
 ---
 
