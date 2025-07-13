@@ -52,7 +52,7 @@ bin/deploy_vespa_app.sh
 step "4/6 Converting CSV to Vespa JSON with embeddings"
 note "transform/csv_to_vespa_json.py deduplicates rows and embeds descriptions." \
      "This may take a while for the full dataset."
-# bin/transform_data.sh
+bin/transform_data.sh
 
 # ---[ 5. Feed documents into Vespa ]----------------------------------------
 step "5/6 Feeding documents into Vespa"
